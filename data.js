@@ -36,7 +36,7 @@ const COLOR_ORDER = ['yellow', 'green', 'blue', 'purple', 'none'];
  */
 const SAMPLE_TILES = [
   'ROGER',      'JOHN',       'EARL',       'ELEANOR',
-  'REV',        'THU',        'ROO',        'SIX',
-  'MARTIAL',    'WARFARIN',   'SEVICHE',    'EIGENVECTOR',
+  'REV',        'MAR',        'ROO',        'SIX',
+  'MARTIAL',    'WARFARIN',   'SEVOFLURANE',    'EIGENVECTOR',
   'MYRRH',      'SEEKS',      'SAVANT',     'ACE',
 ];

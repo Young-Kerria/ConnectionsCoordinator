@@ -6,13 +6,20 @@
 
 'use strict';
 
+/* ── DOM references ─────────────────────────────────────────────────────── */
+
+const setup        = document.getElementById('setup');
+const boardSection = document.getElementById('board-section');
+const tilesInput   = document.getElementById('tiles-input');
+const grid         = document.getElementById('grid');
+const err          = document.getElementById('err');
+const themeToggle  = document.getElementById('theme-toggle');
+const colorBar     = document.getElementById('color-bar');
+
 /* ── State ──────────────────────────────────────────────────────────────── */
 
 /** Currently active color for painting tiles. 'none' means painting is off. */
 let activeColor = 'none';
-
-/** Whether dark mode is currently enabled. */
-let darkMode = false;
 
 /** The tile element currently being dragged, or null. */
 let dragSrcEl = null;
@@ -28,7 +35,7 @@ const roFont = new ResizeObserver(entries => {
 
 /** Steps font down from --tile-font baseline until text fits, min 7.5px. */
 function fitFont(el) {
-  el.style.fontSize = '';  // reset to --tile-font CSS variable
+  el.style.fontSize = '';
   let size = parseFloat(getComputedStyle(el).fontSize);
   while (el.scrollWidth > el.clientWidth + 1 && size > 7.5) {
     size -= 0.5;
@@ -98,7 +105,6 @@ function makeTile(label, color = 'none') {
     if (!dragSrcEl || dragSrcEl === el) return;
 
     // Swap the two tile nodes in the DOM without re-rendering
-    const grid  = document.getElementById('grid');
     const aNext = dragSrcEl.nextSibling === el ? el.nextSibling : dragSrcEl.nextSibling;
     grid.insertBefore(dragSrcEl, el.nextSibling);
     grid.insertBefore(el, aNext);
@@ -113,6 +119,46 @@ function makeTile(label, color = 'none') {
   return el;
 }
 
+/* ── Color picker ───────────────────────────────────────────────────────── */
+
+/** Order of swatches in the picker. 'none' is the off swatch. */
+const SWATCHES = ['none', 'yellow', 'green', 'blue', 'purple'];
+
+/** SVG checkmark shown on the active swatch. Stroke inherits via currentColor. */
+const CHECK_SVG = `
+  <svg class="chk" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+    <polyline points="1,5.5 4,8.5 10,2" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+
+/** Builds the color picker swatches into #color-bar. */
+function buildSwatches() {
+  SWATCHES.forEach((color, i) => {
+    const el = document.createElement('span');
+    el.className   = `swatch sw-${color}${i === 0 ? ' active' : ''}`;
+    el.tabIndex    = 0;
+    el.dataset.color = color;
+    el.innerHTML   = `${CHECK_SVG}${color === 'none' ? 'off' : color}`;
+
+    el.addEventListener('click', () => selectColor(el, color));
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        selectColor(el, color);
+      }
+    });
+
+    colorBar.appendChild(el);
+  });
+}
+
+/** Sets the active painting color and updates swatch UI. */
+function selectColor(swatchEl, color) {
+  colorBar.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+  swatchEl.classList.add('active');
+  activeColor = color;
+}
+
 /* ── Board lifecycle ────────────────────────────────────────────────────── */
 
 /** Parses newline- or comma-separated input into uppercase tile labels. */
@@ -122,8 +168,7 @@ function parseTiles(raw) {
 
 /** Validates input, renders the board, and hooks up ResizeObservers. */
 function loadBoard() {
-  const parsed = parseTiles(document.getElementById('tiles-input').value);
-  const err    = document.getElementById('err');
+  const parsed = parseTiles(tilesInput.value);
 
   if (parsed.length !== 16) {
     err.textContent = `Need exactly 16 tiles. Got ${parsed.length}.`;
@@ -131,8 +176,6 @@ function loadBoard() {
   }
   err.textContent = '';
 
-  const setup = document.getElementById('setup');
-  const grid = document.getElementById('grid');
   roFont.disconnect();
   grid.innerHTML = '';
 
@@ -147,55 +190,35 @@ function loadBoard() {
       el.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
       el.style.opacity    = '1';
       el.style.transform  = 'translateY(0)';
-      requestAnimationFrame(() => {
-        fitFont(el);
-      });
+      requestAnimationFrame(() => fitFont(el));
     }, i * 28);
   });
 
-  setup.classList.add('collapsing');
-  const boardSection = document.getElementById('board-section');
-  setTimeout(() => {
-    setup.style.display = 'none';
-    boardSection.style.display = 'flex';
-    boardSection.classList.add('expanding');
-    requestAnimationFrame(() => {
-      boardSection.classList.remove('expanding');
-      boardSection.classList.add('expanded');
-    });
-  }, 400);
+  setup.style.display        = 'none';
+  boardSection.style.display = 'flex';
 }
 
 /** Populates the textarea with the sample puzzle (shuffled). */
 function loadSample() {
   const tiles = [...SAMPLE_TILES];
   shuffleArray(tiles);
-  document.getElementById('tiles-input').value = tiles.join('\n');
+  tilesInput.value = tiles.join('\n');
 }
 
 /** Tears down the board and returns to the setup screen. */
 function resetBoard() {
   roFont.disconnect();
-  const setup = document.getElementById('setup');
-  const boardSection = document.getElementById('board-section');
-
-  boardSection.classList.remove('expanded');
-  boardSection.classList.add('expanding');
-
-  setTimeout(() => {
-    boardSection.style.display = 'none';
-    setup.style.display = 'flex';
-    setup.classList.remove('collapsing');
-    document.getElementById('tiles-input').value = '';
-    document.getElementById('grid').innerHTML = '';
-  }, 400);
+  boardSection.style.display = 'none';
+  setup.style.display        = 'flex';
+  tilesInput.value           = '';
+  grid.innerHTML             = '';
 }
 
 /* ── Tile helpers ───────────────────────────────────────────────────────── */
 
 /** @returns {HTMLElement[]} All current tile elements in grid order. */
 function getTiles() {
-  return [...document.querySelectorAll('#grid .tile')];
+  return [...grid.querySelectorAll('.tile')];
 }
 
 /** Fisher-Yates in-place shuffle. */
@@ -209,14 +232,12 @@ function shuffleArray(arr) {
 
 /** Randomises all tile positions. */
 function shuffleAll() {
-  const grid = document.getElementById('grid');
   shuffleArray(getTiles()).forEach(el => grid.appendChild(el));
 }
 
 /** Randomises only uncolored tile positions, leaving colored tiles in place. */
 function shuffleUncolored() {
-  const grid = document.getElementById('grid');
-  const all  = getTiles();
+  const all     = getTiles();
   const indices = all
     .map((el, i) => (el.dataset.color === 'none' ? i : -1))
     .filter(i => i >= 0);
@@ -231,7 +252,6 @@ function shuffleUncolored() {
 
 /** Sorts tiles yellow → green → blue → purple → uncolored (shuffled). */
 function sortByColor() {
-  const grid   = document.getElementById('grid');
   const groups = Object.fromEntries(COLOR_ORDER.map(c => [c, []]));
   getTiles().forEach(el => groups[el.dataset.color ?? 'none'].push(el));
   shuffleArray(groups.none);
@@ -243,18 +263,15 @@ function clearColors() {
   getTiles().forEach(el => applyColor(el, 'none'));
 }
 
-/* ── UI controls ────────────────────────────────────────────────────────── */
+/* ── Theme ──────────────────────────────────────────────────────────────── */
 
-/** Sets the active painting color and updates swatch UI. */
-function selectColor(swatchEl, color) {
-  document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
-  swatchEl.classList.add('active');
-  activeColor = color;
-}
-
-/** Toggles light/dark mode. */
+/** Toggles light/dark mode. Source of truth is data-theme on <html>. */
 function toggleTheme() {
-  darkMode = !darkMode;
-  document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : '');
-  document.getElementById('theme-toggle').textContent = darkMode ? 'Light' : 'Dark';
+  const isDark = document.documentElement.dataset.theme === 'dark';
+  document.documentElement.dataset.theme = isDark ? '' : 'dark';
+  themeToggle.textContent = isDark ? 'Dark' : 'Light';
 }
+
+/* ── Initialization ─────────────────────────────────────────────────────── */
+
+buildSwatches();

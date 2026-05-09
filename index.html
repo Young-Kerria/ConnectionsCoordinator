@@ -37,58 +37,8 @@
   <!-- ── Board ──────────────────────────────────────────────────────── -->
   <section id="board-section">
 
-    <!-- Color picker -->
-    <div class="color-bar">
-      <span class="swatch sw-off active" tabindex="0" data-color="none"
-        onclick="selectColor(this, 'none')"
-        onkeydown="if (event.key === 'Enter' || event.key === ' ') selectColor(this, 'none')">
-        <svg class="chk" viewBox="0 0 11 11" fill="none" aria-hidden="true">
-          <polyline points="1,5.5 4,8.5 10,2" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        off
-      </span>
-
-      <span class="swatch sw-yellow" tabindex="0" data-color="yellow"
-        onclick="selectColor(this, 'yellow')"
-        onkeydown="if (event.key === 'Enter' || event.key === ' ') selectColor(this, 'yellow')">
-        <svg class="chk" viewBox="0 0 11 11" fill="none" aria-hidden="true">
-          <polyline points="1,5.5 4,8.5 10,2" stroke="#3D3000" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        yellow
-      </span>
-
-      <span class="swatch sw-green" tabindex="0" data-color="green"
-        onclick="selectColor(this, 'green')"
-        onkeydown="if (event.key === 'Enter' || event.key === ' ') selectColor(this, 'green')">
-        <svg class="chk" viewBox="0 0 11 11" fill="none" aria-hidden="true">
-          <polyline points="1,5.5 4,8.5 10,2" stroke="#1A3300" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        green
-      </span>
-
-      <span class="swatch sw-blue" tabindex="0" data-color="blue"
-        onclick="selectColor(this, 'blue')"
-        onkeydown="if (event.key === 'Enter' || event.key === ' ') selectColor(this, 'blue')">
-        <svg class="chk" viewBox="0 0 11 11" fill="none" aria-hidden="true">
-          <polyline points="1,5.5 4,8.5 10,2" stroke="#0D1F4A" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        blue
-      </span>
-
-      <span class="swatch sw-purple" tabindex="0" data-color="purple"
-        onclick="selectColor(this, 'purple')"
-        onkeydown="if (event.key === 'Enter' || event.key === ' ') selectColor(this, 'purple')">
-        <svg class="chk" viewBox="0 0 11 11" fill="none" aria-hidden="true">
-          <polyline points="1,5.5 4,8.5 10,2" stroke="#2D0A40" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        purple
-      </span>
-    </div>
+    <!-- Color picker (rendered by app.js#buildSwatches) -->
+    <div id="color-bar" class="color-bar"></div>
 
     <p class="hint">Select a color, then click tiles to paint. Click tiles with the same color to unpaint.</p>
 

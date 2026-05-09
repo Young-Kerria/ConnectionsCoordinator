@@ -6,13 +6,11 @@
 }
 
 /* ── Design tokens ─────────────────────────────────────────────────────── */
-/* Type scale: https://utopia.fyi/type/calculator?c=360,18,1.2,1240,20,1.25,5,2 */
-/* Space scale: https://utopia.fyi/space/calculator?c=360,18,1.2,1240,20,1.25,5,2 */
+/* Fluid type and space scales via Utopia (utopia.fyi) */
 :root {
   --step--2: clamp(0.7813rem, 0.7736rem + 0.0341vw, 0.8rem);
   --step--1: clamp(0.9375rem, 0.9119rem + 0.1136vw, 1rem);
   --step-0:  clamp(1.125rem, 1.0739rem + 0.2273vw, 1.25rem);
-  --step-1:  clamp(1.35rem, 1.2631rem + 0.3864vw, 1.5625rem);
   --step-2:  clamp(1.62rem, 1.4837rem + 0.6057vw, 1.9531rem);
   --step-3:  clamp(1.944rem, 1.7405rem + 0.9044vw, 2.4414rem);
   --step-4:  clamp(2.3328rem, 2.0387rem + 1.3072vw, 3.0518rem);
@@ -39,45 +37,49 @@
 
   --radius: 10px;
 
-  /* Light mode — official NYT palette */
-  --bg-page:         #FFFFFF;
-  --bg-tile:         #EFEFE6;
-  --bg-tile-hover:   #E2E2D8;
-  --bg-input:        #F6F6F0;
-  --bg-btn:          #EFEFE6;
-  --bg-btn-hover:    #E2E2D8;
-  --bg-btn-primary:  #000000;
-  --fg-primary:      #000000;
-  --fg-secondary:    #4A4A4A;
-  --fg-tertiary:     #888888;
-  --fg-btn-primary:  #FFFFFF;
-  --border-tile:     1.5px solid #CCCCBB;
-  --border-btn:      1.5px solid #AAAAAA;
+  /* Motion */
+  --transition-fast: 0.12s ease;
+  --transition-base: 0.2s ease;
+
+  /* Palette — light mode */
+  --bg-page:            #FFFFFF;
+  --bg-tile:            #EFEFE6;
+  --bg-tile-hover:      #E2E2D8;
+  --bg-input:           #F6F6F0;
+  --bg-btn:             #EFEFE6;
+  --bg-btn-hover:       #E2E2D8;
+  --bg-btn-primary:     #000000;
+  --fg-primary:         #000000;
+  --fg-secondary:       #4A4A4A;
+  --fg-tertiary:        #888888;
+  --fg-btn-primary:     #FFFFFF;
+  --border-tile:        1.5px solid #CCCCBB;
+  --border-btn:         1.5px solid #AAAAAA;
   --border-btn-primary: 1.5px solid #000000;
-  --border-input:    1.5px solid #CCCCBB;
-  --divider:         #DDDDCC;
-  --shadow-tile:     0 1px 4px rgba(0, 0, 0, 0.08);
+  --border-input:       1.5px solid #CCCCBB;
+  --divider:            #DDDDCC;
+  --shadow-tile:        0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
-/* Dark mode — official NYT palette */
+/* Palette — dark mode */
 [data-theme="dark"] {
-  --bg-page:         #121212;
-  --bg-tile:         #2C2C2E;
-  --bg-tile-hover:   #3A3A3C;
-  --bg-input:        #1C1C1E;
-  --bg-btn:          #2C2C2E;
-  --bg-btn-hover:    #3A3A3C;
-  --bg-btn-primary:  #FFFFFF;
-  --fg-primary:      #FFFFFF;
-  --fg-secondary:    #AEAEB2;
-  --fg-tertiary:     #6E6E73;
-  --fg-btn-primary:  #000000;
-  --border-tile:     1.5px solid #48484A;
-  --border-btn:      1.5px solid #545458;
+  --bg-page:            #121212;
+  --bg-tile:            #2C2C2E;
+  --bg-tile-hover:      #3A3A3C;
+  --bg-input:           #1C1C1E;
+  --bg-btn:             #2C2C2E;
+  --bg-btn-hover:       #3A3A3C;
+  --bg-btn-primary:     #FFFFFF;
+  --fg-primary:         #FFFFFF;
+  --fg-secondary:       #AEAEB2;
+  --fg-tertiary:        #6E6E73;
+  --fg-btn-primary:     #000000;
+  --border-tile:        1.5px solid #48484A;
+  --border-btn:         1.5px solid #545458;
   --border-btn-primary: 1.5px solid #FFFFFF;
-  --border-input:    1.5px solid #48484A;
-  --divider:         #38383A;
-  --shadow-tile:     0 2px 8px rgba(0, 0, 0, 0.4);
+  --border-input:       1.5px solid #48484A;
+  --divider:            #38383A;
+  --shadow-tile:        0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 /* ── Base ──────────────────────────────────────────────────────────────── */
@@ -86,7 +88,7 @@ body {
   font-size: var(--step-0);
   color: var(--fg-primary);
   background: var(--bg-page);
-  transition: background 0.2s, color 0.2s;
+  transition: background var(--transition-base), color var(--transition-base);
   min-height: 100vh;
 }
 
@@ -110,7 +112,6 @@ body {
   font-size: var(--step-2);
   font-weight: 700;
   letter-spacing: -0.02em;
-  color: var(--fg-primary);
 }
 
 .app-sub {
@@ -130,7 +131,7 @@ body {
   color: var(--fg-primary);
   font-family: inherit;
   font-weight: 600;
-  transition: background 0.15s;
+  transition: background var(--transition-base);
   flex-shrink: 0;
   margin-left: 12px;
   margin-top: 2px;
@@ -143,14 +144,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: var(--space-m);
-  overflow: hidden;
-  transition: max-height 0.4s ease, opacity 0.4s ease;
-  max-height: 500px;
-}
-
-#setup.collapsing {
-  max-height: 0;
-  opacity: 0;
 }
 
 textarea {
@@ -164,7 +157,7 @@ textarea {
   background: var(--bg-input);
   color: var(--fg-primary);
   resize: vertical;
-  transition: background 0.2s, color 0.2s;
+  transition: background var(--transition-base), color var(--transition-base);
 }
 textarea::placeholder { color: var(--fg-tertiary); }
 textarea:focus { outline: none; box-shadow: 0 0 0 2px var(--fg-primary); }
@@ -181,10 +174,12 @@ button {
   font-family: inherit;
   font-size: var(--step--1);
   font-weight: 600;
-  padding: var(--space-2xs-xs, --space-3xs);
+  padding: var(--space-2xs-xs);
   border-radius: var(--radius);
   cursor: pointer;
-  transition: background 0.14s, transform 0.1s, opacity 0.14s;
+  transition: background var(--transition-fast),
+              transform  var(--transition-fast),
+              opacity    var(--transition-fast);
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -217,18 +212,6 @@ button:focus-visible { outline: 2px solid var(--fg-primary); outline-offset: 2px
   display: none;
   flex-direction: column;
   gap: var(--space-m);
-  overflow: hidden;
-  transition: max-height 1.8s ease, opacity 1.8s ease;
-}
-
-#board-section.expanding {
-  max-height: 0;
-  opacity: 0;
-}
-
-#board-section.expanded {
-  max-height: 1500px;
-  opacity: 1;
 }
 
 /* ── Color picker ──────────────────────────────────────────────────────── */
@@ -239,14 +222,6 @@ button:focus-visible { outline: 2px solid var(--fg-primary); outline-offset: 2px
   align-items: center;
 }
 
-.color-label {
-  font-size: var(--step--1);
-  color: var(--fg-secondary);
-  margin-right: 2px;
-  white-space: nowrap;
-  font-weight: 600;
-}
-
 .swatch {
   font-size: var(--step--1);
   font-weight: 700;
@@ -254,7 +229,9 @@ button:focus-visible { outline: 2px solid var(--fg-primary); outline-offset: 2px
   border-radius: 99px;
   cursor: pointer;
   border: 2px solid transparent;
-  transition: border-color 0.14s, box-shadow 0.14s, transform 0.1s;
+  transition: border-color var(--transition-fast),
+              box-shadow   var(--transition-fast),
+              transform    var(--transition-fast);
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -263,17 +240,18 @@ button:focus-visible { outline: 2px solid var(--fg-primary); outline-offset: 2px
 }
 .swatch:hover { transform: scale(1.05); }
 .swatch:focus-visible { outline: 2px solid var(--fg-primary); outline-offset: 2px; }
-.swatch.active {
-  border-color: var(--fg-primary) !important;
-  box-shadow: 0 0 0 1px var(--fg-primary);
-}
 
-/* Swatch color variants */
-.sw-off    { background: var(--bg-btn); color: var(--fg-secondary); border-color: var(--border-btn) !important; }
+/* Color variants — declared before .active so .swatch.active wins on specificity. */
+.sw-off    { background: var(--bg-btn); color: var(--fg-secondary); }
 .sw-yellow { background: #F9DF6D; color: #3D3000; }
 .sw-green  { background: #A0C35A; color: #1A3300; }
 .sw-blue   { background: #B0C4EF; color: #0D1F4A; }
 .sw-purple { background: #BA81C5; color: #2D0A40; }
+
+.swatch.active {
+  border-color: var(--fg-primary);
+  box-shadow: 0 0 0 1px var(--fg-primary);
+}
 
 .chk { width: 11px; height: 11px; display: none; flex-shrink: 0; }
 .swatch.active .chk { display: block; }
@@ -303,9 +281,12 @@ button:focus-visible { outline: 2px solid var(--fg-primary); outline-offset: 2px
   overflow: hidden;
   white-space: nowrap;
   height: 66px;
-  transition: background 0.18s, color 0.18s, border-color 0.14s,
-              transform 0.12s, box-shadow 0.12s;
   box-shadow: var(--shadow-tile);
+  transition: background   var(--transition-base),
+              color        var(--transition-base),
+              border-color var(--transition-fast),
+              transform    var(--transition-fast),
+              box-shadow   var(--transition-fast);
 }
 .tile:hover {
   background: var(--bg-tile-hover);
@@ -318,8 +299,8 @@ button:focus-visible { outline: 2px solid var(--fg-primary); outline-offset: 2px
 .tile.just-swapped  { animation: pop 0.18s ease; }
 
 @keyframes pop {
-  0%   { transform: scale(0.91); }
-  100% { transform: scale(1); }
+  from { transform: scale(0.91); }
+  to   { transform: scale(1); }
 }
 
 /* ── Misc ──────────────────────────────────────────────────────────────── */
