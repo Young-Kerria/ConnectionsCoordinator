@@ -289,6 +289,7 @@ button:focus-visible { outline: 2px solid var(--fg-primary); outline-offset: 2px
   letter-spacing: 0.05em;
   cursor: grab;
   user-select: none;
+  touch-action: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -306,6 +307,11 @@ button:focus-visible { outline: 2px solid var(--fg-primary); outline-offset: 2px
   background: var(--bg-tile-hover);
   transform: translateY(-2px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.13);
+}
+.tile:active {
+  background: var(--bg-tile-hover);
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
 }
 .tile:focus-visible { outline: 2px solid var(--fg-primary); outline-offset: 2px; }
 .tile.dragging      { opacity: 0.18; cursor: grabbing; transform: none; box-shadow: none; }

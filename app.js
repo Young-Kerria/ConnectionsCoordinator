@@ -21,8 +21,8 @@ const colorBar     = document.getElementById('color-bar');
 /** Currently active color for painting tiles. 'none' means painting is off. */
 let activeColor = 'none';
 
-/** The tile element currently being dragged, or null. */
-let dragSrcEl = null;
+/** Pointer movement (in px) past which a press becomes a drag instead of a click. */
+const DRAG_THRESHOLD = 6;
 
 /* ── ResizeObservers ────────────────────────────────────────────────────── */
 
@@ -56,17 +56,35 @@ function applyColor(el, color) {
 
 /* ── Tile factory ───────────────────────────────────────────────────────── */
 
+/** Clears the .drag-over highlight from any tile in the grid. */
+function clearDragOver() {
+  grid.querySelectorAll('.tile.drag-over').forEach(t => t.classList.remove('drag-over'));
+}
+
+/** Plays the just-swapped pop animation on a pair of tiles. */
+function playSwapAnimation(a, b) {
+  [a, b].forEach(t => {
+    t.classList.remove('just-swapped');
+    void t.offsetWidth;
+    t.classList.add('just-swapped');
+  });
+}
+
 /** Creates a fully wired tile DOM element. */
 function makeTile(label, color = 'none') {
   const el = document.createElement('div');
   el.className  = 'tile';
   el.textContent = label;
-  el.draggable  = true;
   el.tabIndex   = 0;
   applyColor(el, color);
 
-  /* ── Click: paint / unpaint ── */
+  let pointerStartX = 0;
+  let pointerStartY = 0;
+  let dragging = false;
+
+  /* ── Click: paint / unpaint (skipped if a drag occurred) ── */
   el.addEventListener('click', () => {
+    if (dragging) return;
     if (activeColor === 'none') return;
     const next = el.dataset.color === activeColor ? 'none' : activeColor;
     applyColor(el, next);
@@ -80,40 +98,59 @@ function makeTile(label, color = 'none') {
     }
   });
 
-  /* ── Drag & drop ── */
-  el.addEventListener('dragstart', e => {
-    dragSrcEl = el;
-    setTimeout(() => el.classList.add('dragging'), 0);
-    e.dataTransfer.effectAllowed = 'move';
+  /* ── Pointer-based drag (mouse, touch, pen) ── */
+  el.addEventListener('pointerdown', e => {
+    if (e.button !== 0) return;
+    pointerStartX = e.clientX;
+    pointerStartY = e.clientY;
+    dragging = false;
+    el.setPointerCapture(e.pointerId);
   });
 
-  el.addEventListener('dragend', () => {
+  el.addEventListener('pointermove', e => {
+    if (!el.hasPointerCapture(e.pointerId)) return;
+
+    if (!dragging) {
+      const dist = Math.hypot(e.clientX - pointerStartX, e.clientY - pointerStartY);
+      if (dist < DRAG_THRESHOLD) return;
+      dragging = true;
+      el.classList.add('dragging');
+    }
+
+    const target = document.elementFromPoint(e.clientX, e.clientY)?.closest('.tile');
+    clearDragOver();
+    if (target && target !== el) target.classList.add('drag-over');
+  });
+
+  el.addEventListener('pointerup', e => {
+    if (!el.hasPointerCapture(e.pointerId)) return;
+    el.releasePointerCapture(e.pointerId);
+    if (!dragging) return;
+
+    const target = document.elementFromPoint(e.clientX, e.clientY)?.closest('.tile');
+    clearDragOver();
     el.classList.remove('dragging');
-    dragSrcEl = null;
+
+    if (target && target !== el && target.parentElement === grid && el.parentElement === grid) {
+      // Swap el and target in the grid by remembering both original next-siblings.
+      const aNext = el.nextSibling;
+      const bNext = target.nextSibling;
+      grid.insertBefore(el, bNext);
+      grid.insertBefore(target, aNext);
+      playSwapAnimation(el, target);
+    }
+
+    // Keep `dragging` true through the click event that follows pointerup,
+    // so the click handler skips its paint logic.
+    setTimeout(() => { dragging = false; }, 0);
   });
 
-  el.addEventListener('dragover', e => {
-    e.preventDefault();
-    if (el !== dragSrcEl) el.classList.add('drag-over');
-  });
-
-  el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
-
-  el.addEventListener('drop', e => {
-    e.preventDefault();
-    el.classList.remove('drag-over');
-    if (!dragSrcEl || dragSrcEl === el) return;
-
-    // Swap the two tile nodes in the DOM without re-rendering
-    const aNext = dragSrcEl.nextSibling === el ? el.nextSibling : dragSrcEl.nextSibling;
-    grid.insertBefore(dragSrcEl, el.nextSibling);
-    grid.insertBefore(el, aNext);
-
-    [dragSrcEl, el].forEach(t => {
-      t.classList.remove('just-swapped');
-      void t.offsetWidth;
-      t.classList.add('just-swapped');
-    });
+  el.addEventListener('pointercancel', e => {
+    if (!el.hasPointerCapture(e.pointerId)) return;
+    el.releasePointerCapture(e.pointerId);
+    el.classList.remove('dragging');
+    clearDragOver();
+    dragging = false;
   });
 
   return el;
@@ -161,7 +198,7 @@ function selectColor(swatchEl, color) {
 
 /* ── Panel transitions ──────────────────────────────────────────────────── */
 
-/** Reveals a collapsed .panel. Forces reflow so the animation always plays. */
+/** Reveals a collapsed .panel. */
 function showPanel(panel) {
   void panel.offsetHeight;
   panel.classList.add('panel-open');
