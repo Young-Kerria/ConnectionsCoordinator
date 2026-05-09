@@ -131,6 +131,7 @@ function loadBoard() {
   }
   err.textContent = '';
 
+  const setup = document.getElementById('setup');
   const grid = document.getElementById('grid');
   roFont.disconnect();
   grid.innerHTML = '';
@@ -152,8 +153,17 @@ function loadBoard() {
     }, i * 28);
   });
 
-  document.getElementById('setup').style.display        = 'none';
-  document.getElementById('board-section').style.display = 'flex';
+  setup.classList.add('collapsing');
+  const boardSection = document.getElementById('board-section');
+  setTimeout(() => {
+    setup.style.display = 'none';
+    boardSection.style.display = 'flex';
+    boardSection.classList.add('expanding');
+    requestAnimationFrame(() => {
+      boardSection.classList.remove('expanding');
+      boardSection.classList.add('expanded');
+    });
+  }, 400);
 }
 
 /** Populates the textarea with the sample puzzle (shuffled). */
@@ -166,10 +176,19 @@ function loadSample() {
 /** Tears down the board and returns to the setup screen. */
 function resetBoard() {
   roFont.disconnect();
-  document.getElementById('board-section').style.display = 'none';
-  document.getElementById('setup').style.display         = 'flex';
-  document.getElementById('tiles-input').value           = '';
-  document.getElementById('grid').innerHTML              = '';
+  const setup = document.getElementById('setup');
+  const boardSection = document.getElementById('board-section');
+
+  boardSection.classList.remove('expanded');
+  boardSection.classList.add('expanding');
+
+  setTimeout(() => {
+    boardSection.style.display = 'none';
+    setup.style.display = 'flex';
+    setup.classList.remove('collapsing');
+    document.getElementById('tiles-input').value = '';
+    document.getElementById('grid').innerHTML = '';
+  }, 400);
 }
 
 /* ── Tile helpers ───────────────────────────────────────────────────────── */

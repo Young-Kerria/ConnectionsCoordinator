@@ -143,6 +143,14 @@ body {
   display: flex;
   flex-direction: column;
   gap: var(--space-m);
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.4s ease;
+  max-height: 500px;
+}
+
+#setup.collapsing {
+  max-height: 0;
+  opacity: 0;
 }
 
 textarea {
@@ -209,6 +217,18 @@ button:focus-visible { outline: 2px solid var(--fg-primary); outline-offset: 2px
   display: none;
   flex-direction: column;
   gap: var(--space-m);
+  overflow: hidden;
+  transition: max-height 1.8s ease, opacity 1.8s ease;
+}
+
+#board-section.expanding {
+  max-height: 0;
+  opacity: 0;
+}
+
+#board-section.expanded {
+  max-height: 1500px;
+  opacity: 1;
 }
 
 /* ── Color picker ──────────────────────────────────────────────────────── */
