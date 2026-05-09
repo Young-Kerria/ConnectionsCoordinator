@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connections Coordinator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ── Header ─────────────────────────────────────────────────────── -->
+  <header class="app-header">
+    <div>
+      <div class="app-title">Connections Coordinator</div>
+      <div class="app-sub">
+        Assistant for NY Times Connections. <br> Drag tiles to rearrange. Color to form groups.
+      </div>
+    </div>
+    <button id="theme-toggle" onclick="toggleTheme()">Dark</button>
+  </header>
+
+  <!-- ── Setup / input ──────────────────────────────────────────────── -->
+  <section id="setup">
+    <textarea
+      id="tiles-input"
+      placeholder="Enter the 16 tiles (one per line or comma-separated)&#10;&#10;e.g. FIRST, COLLEGE, BEST ..."
+    ></textarea>
+    <div class="btn-row">
+      <button class="btn-primary"   onclick="loadBoard()">Load board</button>
+      <button class="btn-secondary" onclick="loadSample()">Load sample puzzle</button>
+      <span id="err"></span>
+    </div>
+  </section>
+
+  <!-- ── Board ──────────────────────────────────────────────────────── -->
+  <section id="board-section">
+
+    <!-- Color picker -->
+    <div class="color-bar">
+      <span class="swatch sw-off active" tabindex="0" data-color="none"
+        onclick="selectColor(this, 'none')"
+        onkeydown="if (event.key === 'Enter' || event.key === ' ') selectColor(this, 'none')">
+        <svg class="chk" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+          <polyline points="1,5.5 4,8.5 10,2" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        off
+      </span>
+
+      <span class="swatch sw-yellow" tabindex="0" data-color="yellow"
+        onclick="selectColor(this, 'yellow')"
+        onkeydown="if (event.key === 'Enter' || event.key === ' ') selectColor(this, 'yellow')">
+        <svg class="chk" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+          <polyline points="1,5.5 4,8.5 10,2" stroke="#3D3000" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        yellow
+      </span>
+
+      <span class="swatch sw-green" tabindex="0" data-color="green"
+        onclick="selectColor(this, 'green')"
+        onkeydown="if (event.key === 'Enter' || event.key === ' ') selectColor(this, 'green')">
+        <svg class="chk" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+          <polyline points="1,5.5 4,8.5 10,2" stroke="#1A3300" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        green
+      </span>
+
+      <span class="swatch sw-blue" tabindex="0" data-color="blue"
+        onclick="selectColor(this, 'blue')"
+        onkeydown="if (event.key === 'Enter' || event.key === ' ') selectColor(this, 'blue')">
+        <svg class="chk" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+          <polyline points="1,5.5 4,8.5 10,2" stroke="#0D1F4A" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        blue
+      </span>
+
+      <span class="swatch sw-purple" tabindex="0" data-color="purple"
+        onclick="selectColor(this, 'purple')"
+        onkeydown="if (event.key === 'Enter' || event.key === ' ') selectColor(this, 'purple')">
+        <svg class="chk" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+          <polyline points="1,5.5 4,8.5 10,2" stroke="#2D0A40" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        purple
+      </span>
+    </div>
+
+    <p class="hint">Select a color, then click tiles to paint. Click tiles with the same color to unpaint.</p>
+
+    <div class="divider"></div>
+
+    <!-- Tile grid -->
+    <div id="grid"></div>
+
+    <div class="divider"></div>
+
+    <!-- Controls -->
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="sortByColor()">Sort by color</button>
+      <button class="btn-secondary" onclick="shuffleAll()">Shuffle all</button>
+      <button class="btn-secondary" onclick="shuffleUncolored()">Shuffle uncolored</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="clearColors()">Clear colors</button>
+      <button class="btn-secondary" onclick="resetBoard()">New puzzle</button>
+    </div>
+
+  </section>
+
+  <!-- ── Footer ─────────────────────────────────────────────────────── -->
+  <footer>
+    This is an unofficial brainstorming tool and is not affiliated with The New York Times.
+  </footer>
+
+</div><!-- /#app -->
+
+<!-- data.js must load before app.js (provides COLOR_STYLES, COLOR_ORDER, SAMPLE_TILES) -->
+<script src="data.js"  defer></script>
+<script src="app.js"   defer></script>
+
+</body>
+</html>
