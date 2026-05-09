@@ -104,6 +104,7 @@ function makeTile(label, color = 'none') {
     pointerStartX = e.clientX;
     pointerStartY = e.clientY;
     dragging = false;
+    el.classList.add('pressed');
     el.setPointerCapture(e.pointerId);
   });
 
@@ -125,6 +126,7 @@ function makeTile(label, color = 'none') {
   el.addEventListener('pointerup', e => {
     if (!el.hasPointerCapture(e.pointerId)) return;
     el.releasePointerCapture(e.pointerId);
+    el.classList.remove('pressed');
     if (!dragging) return;
 
     const target = document.elementFromPoint(e.clientX, e.clientY)?.closest('.tile');
@@ -148,6 +150,7 @@ function makeTile(label, color = 'none') {
   el.addEventListener('pointercancel', e => {
     if (!el.hasPointerCapture(e.pointerId)) return;
     el.releasePointerCapture(e.pointerId);
+    el.classList.remove('pressed');
     el.classList.remove('dragging');
     clearDragOver();
     dragging = false;
