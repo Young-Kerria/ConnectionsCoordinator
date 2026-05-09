@@ -22,20 +22,23 @@
   </header>
 
   <!-- ── Setup / input ──────────────────────────────────────────────── -->
-  <section id="setup">
-    <textarea
-      id="tiles-input"
-      placeholder="Enter the 16 tiles (one per line or comma-separated)&#10;&#10;e.g. FIRST, COLLEGE, BEST ..."
-    ></textarea>
-    <div class="btn-row">
-      <button class="btn-primary"   onclick="loadBoard()">Load board</button>
-      <button class="btn-secondary" onclick="loadSample()">Load sample puzzle</button>
-      <span id="err"></span>
+  <section id="setup" class="panel">
+    <div class="panel-content">
+      <textarea
+        id="tiles-input"
+        placeholder="Enter the 16 tiles (one per line or comma-separated)&#10;&#10;e.g. FIRST, COLLEGE, BEST ..."
+      ></textarea>
+      <div class="btn-row">
+        <button class="btn-primary"   onclick="loadBoard()">Load board</button>
+        <button class="btn-secondary" onclick="loadSample()">Load sample puzzle</button>
+        <span id="err"></span>
+      </div>
     </div>
   </section>
 
   <!-- ── Board ──────────────────────────────────────────────────────── -->
-  <section id="board-section">
+  <section id="board-section" class="panel">
+    <div class="panel-content">
 
     <!-- Color picker (rendered by app.js#buildSwatches) -->
     <div id="color-bar" class="color-bar"></div>
@@ -60,6 +63,7 @@
       <button class="btn-secondary" onclick="resetBoard()">New puzzle</button>
     </div>
 
+    </div>
   </section>
 
   <!-- ── Footer ─────────────────────────────────────────────────────── -->

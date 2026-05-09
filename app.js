@@ -159,6 +159,30 @@ function selectColor(swatchEl, color) {
   activeColor = color;
 }
 
+/* ── Panel transitions ──────────────────────────────────────────────────── */
+
+/** Reveals a collapsed .panel. Forces reflow so the animation always plays. */
+function showPanel(panel) {
+  void panel.offsetHeight;
+  panel.classList.add('panel-open');
+}
+
+/** Hides an open .panel. Optional callback runs when the transition ends.
+ *  Filters out bubbled transitionend events from descendants (e.g. button
+ *  hover/active transitions) so the callback only fires when the panel
+ *  itself finishes collapsing. */
+function hidePanel(panel, onHidden) {
+  panel.classList.remove('panel-open');
+  if (!onHidden) return;
+
+  function handleEnd(e) {
+    if (e.target !== panel || e.propertyName !== 'grid-template-rows') return;
+    panel.removeEventListener('transitionend', handleEnd);
+    onHidden();
+  }
+  panel.addEventListener('transitionend', handleEnd);
+}
+
 /* ── Board lifecycle ────────────────────────────────────────────────────── */
 
 /** Parses newline- or comma-separated input into uppercase tile labels. */
@@ -176,26 +200,27 @@ function loadBoard() {
   }
   err.textContent = '';
 
-  roFont.disconnect();
-  grid.innerHTML = '';
+  hidePanel(setup, () => {
+    roFont.disconnect();
+    grid.innerHTML = '';
 
-  parsed.forEach((label, i) => {
-    const el = makeTile(label);
-    el.style.opacity   = '0';
-    el.style.transform = 'translateY(8px)';
-    grid.appendChild(el);
-    roFont.observe(el);
+    parsed.forEach((label, i) => {
+      const el = makeTile(label);
+      el.style.opacity   = '0';
+      el.style.transform = 'translateY(8px)';
+      grid.appendChild(el);
+      roFont.observe(el);
 
-    setTimeout(() => {
-      el.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
-      el.style.opacity    = '1';
-      el.style.transform  = 'translateY(0)';
-      requestAnimationFrame(() => fitFont(el));
-    }, i * 28);
+      setTimeout(() => {
+        el.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+        el.style.opacity    = '1';
+        el.style.transform  = 'translateY(0)';
+        requestAnimationFrame(() => fitFont(el));
+      }, i * 28);
+    });
+
+    showPanel(boardSection);
   });
-
-  setup.style.display        = 'none';
-  boardSection.style.display = 'flex';
 }
 
 /** Populates the textarea with the sample puzzle (shuffled). */
@@ -207,11 +232,12 @@ function loadSample() {
 
 /** Tears down the board and returns to the setup screen. */
 function resetBoard() {
-  roFont.disconnect();
-  boardSection.style.display = 'none';
-  setup.style.display        = 'flex';
-  tilesInput.value           = '';
-  grid.innerHTML             = '';
+  hidePanel(boardSection, () => {
+    roFont.disconnect();
+    tilesInput.value = '';
+    grid.innerHTML   = '';
+    showPanel(setup);
+  });
 }
 
 /* ── Tile helpers ───────────────────────────────────────────────────────── */
@@ -275,3 +301,4 @@ function toggleTheme() {
 /* ── Initialization ─────────────────────────────────────────────────────── */
 
 buildSwatches();
+showPanel(setup);
