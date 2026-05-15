@@ -351,14 +351,23 @@ function clearColors() {
 
 /* ── Theme ──────────────────────────────────────────────────────────────── */
 
-/** Toggles light/dark mode. Source of truth is data-theme on <html>. */
+function isDarkMode() {
+  return document.documentElement.dataset.theme === 'dark';
+}
+
+function syncThemeLabel() {
+  themeToggle.textContent = isDarkMode() ? 'Light' : 'Dark';
+}
+
 function toggleTheme() {
-  const isDark = document.documentElement.dataset.theme === 'dark';
-  document.documentElement.dataset.theme = isDark ? '' : 'dark';
-  themeToggle.textContent = isDark ? 'Dark' : 'Light';
+  const next = isDarkMode() ? 'light' : 'dark';
+  document.documentElement.dataset.theme = next === 'dark' ? 'dark' : '';
+  localStorage.setItem('theme', next);
+  syncThemeLabel();
 }
 
 /* ── Initialization ─────────────────────────────────────────────────────── */
 
 buildSwatches();
+syncThemeLabel();
 showPanel(setup);
