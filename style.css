@@ -35,11 +35,21 @@
   --space-2xl-3xl: clamp(4.5rem, 3.2727rem + 5.4545vw, 7.5rem);
   --space-s-l:     clamp(1.125rem, 0.5625rem + 2.5vw, 2.5rem);
 
-  --radius: 10px;
+  --radius:      10px;
+  --radius-pill: 99px;
+
+  --tile-height:    66px;
+  --grid-columns:   4;
 
   /* Motion */
-  --transition-fast: 0.12s ease;
-  --transition-base: 0.2s ease;
+  --transition-fast:  0.12s ease;
+  --transition-base:  0.2s ease;
+  --transition-panel: 0.5s ease;
+  --transition-pop:   0.18s ease;
+
+  /* Focus */
+  --focus-outline:        2px solid var(--fg-primary);
+  --focus-outline-offset: 2px;
 
   /* Palette — light mode */
   --bg-page:            #FFFFFF;
@@ -53,6 +63,7 @@
   --fg-secondary:       #4A4A4A;
   --fg-tertiary:        #888888;
   --fg-btn-primary:     #FFFFFF;
+  --fg-error:           #cc2200;
   --border-tile:        1.5px solid #DCDCCE;
   --border-btn:         1.5px solid #C5C5C0;
   --border-btn-primary: 1.5px solid #000000;
@@ -131,7 +142,7 @@ body {
 #theme-toggle {
   background: var(--bg-btn);
   border: var(--border-btn);
-  border-radius: 99px;
+  border-radius: var(--radius-pill);
   padding: 6px 14px;
   cursor: pointer;
   font-size: var(--step--1);
@@ -144,7 +155,7 @@ body {
   margin-top: 2px;
 }
 #theme-toggle:hover { background: var(--bg-btn-hover); }
-#theme-toggle:focus-visible { outline: 2px solid var(--fg-primary); outline-offset: 2px; }
+#theme-toggle:focus-visible { outline: var(--focus-outline); outline-offset: var(--focus-outline-offset); }
 
 /* ── Panels ────────────────────────────────────────────────────────────── */
 /* Generic reveal/hide container. Animates between hidden (0fr) and open (1fr).
@@ -153,7 +164,7 @@ body {
 .panel {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows 0.5s ease;
+  transition: grid-template-rows var(--transition-panel);
 }
 
 .panel > .panel-content {
@@ -164,7 +175,7 @@ body {
   gap: var(--space-m);
   padding: 8px;
   opacity: 0;
-  transition: opacity 0.5s ease;
+  transition: opacity var(--transition-panel);
 }
 
 .panel.panel-open {
@@ -214,7 +225,7 @@ button {
   gap: 5px;
 }
 button:active { transform: scale(0.97); }
-button:focus-visible { outline: 2px solid var(--fg-primary); outline-offset: 2px; }
+button:focus-visible { outline: var(--focus-outline); outline-offset: var(--focus-outline-offset); }
 
 .btn-primary {
   background: var(--bg-btn-primary);
@@ -233,7 +244,7 @@ button:focus-visible { outline: 2px solid var(--fg-primary); outline-offset: 2px
 /* ── Error message ─────────────────────────────────────────────────────── */
 #err {
   font-size: var(--step--1);
-  color: #cc2200;
+  color: var(--fg-error);
 }
 
 /* ── Color picker ──────────────────────────────────────────────────────── */
@@ -249,7 +260,7 @@ button:focus-visible { outline: 2px solid var(--fg-primary); outline-offset: 2px
   font-size: var(--step--1);
   font-weight: 700;
   padding: 5px clamp(9px, 1.8vw, 15px);
-  border-radius: 99px;
+  border-radius: var(--radius-pill);
   cursor: pointer;
   border: 2px solid transparent;
   transition: transform var(--transition-fast),
@@ -264,7 +275,7 @@ button:focus-visible { outline: 2px solid var(--fg-primary); outline-offset: 2px
   transform: scale(0.96);
   filter: brightness(0.94);
 }
-.swatch:focus-visible { outline: 2px solid var(--fg-primary); outline-offset: 2px; }
+.swatch:focus-visible { outline: var(--focus-outline); outline-offset: var(--focus-outline-offset); }
 
 /* Color variants — declared before .active so .swatch.active wins on specificity. */
 .sw-off    { background: var(--bg-btn); color: var(--fg-secondary); }
@@ -288,7 +299,7 @@ button:focus-visible { outline: 2px solid var(--fg-primary); outline-offset: 2px
 /* ── Tile grid ─────────────────────────────────────────────────────────── */
 #grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
   gap: var(--space-s);
 }
 
@@ -311,7 +322,7 @@ button:focus-visible { outline: 2px solid var(--fg-primary); outline-offset: 2px
   justify-content: center;
   overflow: hidden;
   white-space: nowrap;
-  height: 66px;
+  height: var(--tile-height);
   box-shadow: var(--shadow-tile);
   transition: background   var(--transition-base),
               color        var(--transition-base),
@@ -331,9 +342,9 @@ button:focus-visible { outline: 2px solid var(--fg-primary); outline-offset: 2px
   box-shadow: var(--shadow-pressed);
   z-index: 1;
 }
-.tile:focus-visible { outline: 2px solid var(--fg-primary); outline-offset: 2px; }
+.tile:focus-visible { outline: var(--focus-outline); outline-offset: var(--focus-outline-offset); }
 .tile.dragging      { cursor: grabbing; }
-.tile.just-swapped  { animation: pop 0.18s ease; }
+.tile.just-swapped  { animation: pop var(--transition-pop); }
 
 @keyframes pop {
   from { transform: scale(0.91); }

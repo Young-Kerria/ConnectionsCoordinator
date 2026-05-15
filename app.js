@@ -16,13 +16,33 @@ const err          = document.getElementById('err');
 const themeToggle  = document.getElementById('theme-toggle');
 const colorBar     = document.getElementById('color-bar');
 
-/* ── State ──────────────────────────────────────────────────────────────── */
+/* ── Constants ──────────────────────────────────────────────────────────── */
 
-/** Currently active color for painting tiles. 'none' means painting is off. */
-let activeColor = 'none';
+/** NYT Connections is 4×4 */
+const TILES_PER_PUZZLE = 16;
 
 /** Pointer movement (in px) past which a press becomes a drag instead of a click. */
 const DRAG_THRESHOLD = 6;
+
+/** Stagger between successive tile fade-ins, in milliseconds. */
+const TILE_FADE_STAGGER_MS = 28;
+
+/** Duration of each tile's fade-in transition. */
+const TILE_FADE_DURATION = '0.25s';
+
+/** Starting vertical offset (px) for the tile fade-in. */
+const TILE_FADE_OFFSET_PX = 8;
+
+/** Minimum font size (px) that fitFont will shrink to. */
+const FIT_FONT_MIN_PX = 7.5;
+
+/** Step (px) by which fitFont decreases the font size each iteration. */
+const FIT_FONT_STEP_PX = 0.5;
+
+/* ── State ──────────────────────────────────────────────────────────────── */
+
+/** Active color for painting tiles. */
+let activeColor = 'none';
 
 /* ── ResizeObservers ────────────────────────────────────────────────────── */
 
@@ -33,12 +53,12 @@ const roFont = new ResizeObserver(entries => {
 
 /* ── Tile sizing ────────────────────────────────────────────────────────── */
 
-/** Steps font down from --tile-font baseline until text fits, min 7.5px. */
+/** Steps font down from the CSS baseline until text fits, bounded by FIT_FONT_MIN_PX. */
 function fitFont(el) {
   el.style.fontSize = '';
   let size = parseFloat(getComputedStyle(el).fontSize);
-  while (el.scrollWidth > el.clientWidth + 1 && size > 7.5) {
-    size -= 0.5;
+  while (el.scrollWidth > el.clientWidth + 1 && size > FIT_FONT_MIN_PX) {
+    size -= FIT_FONT_STEP_PX;
     el.style.fontSize = `${size}px`;
   }
 }
@@ -234,8 +254,8 @@ function parseTiles(raw) {
 function loadBoard() {
   const parsed = parseTiles(tilesInput.value);
 
-  if (parsed.length !== 16) {
-    err.textContent = `Need exactly 16 tiles. Got ${parsed.length}.`;
+  if (parsed.length !== TILES_PER_PUZZLE) {
+    err.textContent = `Need exactly ${TILES_PER_PUZZLE} tiles. Got ${parsed.length}.`;
     return;
   }
   err.textContent = '';
@@ -247,16 +267,16 @@ function loadBoard() {
     parsed.forEach((label, i) => {
       const el = makeTile(label);
       el.style.opacity   = '0';
-      el.style.transform = 'translateY(8px)';
+      el.style.transform = `translateY(${TILE_FADE_OFFSET_PX}px)`;
       grid.appendChild(el);
       roFont.observe(el);
 
       setTimeout(() => {
-        el.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+        el.style.transition = `opacity ${TILE_FADE_DURATION} ease, transform ${TILE_FADE_DURATION} ease`;
         el.style.opacity    = '1';
         el.style.transform  = 'translateY(0)';
         requestAnimationFrame(() => fitFont(el));
-      }, i * 28);
+      }, i * TILE_FADE_STAGGER_MS);
     });
 
     showPanel(boardSection);
