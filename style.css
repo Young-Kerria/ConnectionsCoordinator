@@ -43,43 +43,50 @@
 
   /* Palette — light mode */
   --bg-page:            #FFFFFF;
-  --bg-tile:            #EFEFE6;
-  --bg-tile-hover:      #E2E2D8;
-  --bg-input:           #F6F6F0;
-  --bg-btn:             #EFEFE6;
-  --bg-btn-hover:       #E2E2D8;
+  --bg-tile:            #F7F7F2;
+  --bg-tile-hover:      #EFEFE8;
+  --bg-input:           #FCFCF9;
+  --bg-btn:             #F7F7F2;
+  --bg-btn-hover:       #EFEFE8;
   --bg-btn-primary:     #000000;
   --fg-primary:         #000000;
   --fg-secondary:       #4A4A4A;
   --fg-tertiary:        #888888;
   --fg-btn-primary:     #FFFFFF;
-  --border-tile:        1.5px solid #CCCCBB;
-  --border-btn:         1.5px solid #AAAAAA;
+  --border-tile:        1.5px solid #DCDCCE;
+  --border-btn:         1.5px solid #C5C5C0;
   --border-btn-primary: 1.5px solid #000000;
-  --border-input:       1.5px solid #CCCCBB;
-  --divider:            #DDDDCC;
-  --shadow-tile:        0 1px 4px rgba(0, 0, 0, 0.08);
+  --border-input:       1.5px solid #DCDCCE;
+  --divider:            #E8E8DD;
+  /* Shadow color flips per theme; geometry is shared. */
+  --shadow-rgb:         0, 0, 0;
+  --shadow-tile:        0 1px 4px  rgba(var(--shadow-rgb), 0.08);
+  --shadow-hover:       0 4px 10px rgba(var(--shadow-rgb), 0.13);
+  --shadow-pressed:     0 0 0 4px  rgba(var(--shadow-rgb), 0.08),
+                        0 14px 28px rgba(var(--shadow-rgb), 0.15);
 }
 
 /* Palette — dark mode */
 [data-theme="dark"] {
-  --bg-page:            #121212;
-  --bg-tile:            #2C2C2E;
-  --bg-tile-hover:      #3A3A3C;
-  --bg-input:           #1C1C1E;
-  --bg-btn:             #2C2C2E;
-  --bg-btn-hover:       #3A3A3C;
-  --bg-btn-primary:     #FFFFFF;
-  --fg-primary:         #FFFFFF;
-  --fg-secondary:       #AEAEB2;
-  --fg-tertiary:        #6E6E73;
-  --fg-btn-primary:     #000000;
-  --border-tile:        1.5px solid #48484A;
-  --border-btn:         1.5px solid #545458;
-  --border-btn-primary: 1.5px solid #FFFFFF;
-  --border-input:       1.5px solid #48484A;
-  --divider:            #38383A;
-  --shadow-tile:        0 2px 8px rgba(0, 0, 0, 0.4);
+  --bg-page:            #1B1B1F;
+  --bg-tile:            #2D2D33;
+  --bg-tile-hover:      #3B3B42;
+  --bg-input:           #25252A;
+  --bg-btn:             #2D2D33;
+  --bg-btn-hover:       #3B3B42;
+  --bg-btn-primary:     #ECECEC;
+  --fg-primary:         #ECECEC;
+  --fg-secondary:       #B5B5BA;
+  --fg-tertiary:        #75757B;
+  --fg-btn-primary:     #1B1B1F;
+  --border-tile:        1.5px solid #494950;
+  --border-btn:         1.5px solid #555560;
+  --border-btn-primary: 1.5px solid #ECECEC;
+  --border-input:       1.5px solid #494950;
+  --divider:            #3B3B42;
+  --shadow-rgb:         255, 255, 255;
+  --shadow-pressed:     0 0 0 4px  rgba(var(--shadow-rgb), 0.05),
+                        0 14px 28px rgba(var(--shadow-rgb), 0.10);
 }
 
 /* ── Base ──────────────────────────────────────────────────────────────── */
@@ -244,16 +251,18 @@ button:focus-visible { outline: 2px solid var(--fg-primary); outline-offset: 2px
   border-radius: 99px;
   cursor: pointer;
   border: 2px solid transparent;
-  transition: border-color var(--transition-fast),
-              box-shadow   var(--transition-fast),
-              transform    var(--transition-fast);
+  transition: transform var(--transition-fast),
+              filter    var(--transition-fast);
   display: inline-flex;
   align-items: center;
   gap: 4px;
   user-select: none;
   letter-spacing: 0.01em;
 }
-.swatch:hover { transform: scale(1.05); }
+.swatch:hover {
+  transform: scale(0.96);
+  filter: brightness(0.94);
+}
 .swatch:focus-visible { outline: 2px solid var(--fg-primary); outline-offset: 2px; }
 
 /* Color variants — declared before .active so .swatch.active wins on specificity. */
@@ -264,9 +273,13 @@ button:focus-visible { outline: 2px solid var(--fg-primary); outline-offset: 2px
 .sw-purple { background: #BA81C5; color: #2D0A40; }
 
 .swatch.active {
-  border-color: var(--fg-primary);
-  box-shadow: 0 0 0 1px var(--fg-primary);
+  transform: scale(0.93);
+  filter: brightness(0.85);
 }
+
+/* Dark mode: invert brightness direction (lighten instead of darken). */
+[data-theme="dark"] .swatch:hover  { filter: brightness(1.15); }
+[data-theme="dark"] .swatch.active { filter: brightness(1.3); }
 
 .chk { width: 11px; height: 11px; display: none; flex-shrink: 0; }
 .swatch.active .chk { display: block; }
@@ -309,13 +322,12 @@ button:focus-visible { outline: 2px solid var(--fg-primary); outline-offset: 2px
 .tile.drag-over {
   background: var(--bg-tile-hover);
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.13);
+  box-shadow: var(--shadow-hover);
 }
 .tile.pressed {
   background: var(--bg-tile-hover);
   transform: scale(1.08);
-  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.08),
-              0 14px 28px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--shadow-pressed);
   z-index: 1;
 }
 .tile:focus-visible { outline: 2px solid var(--fg-primary); outline-offset: 2px; }
